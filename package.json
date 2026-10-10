@@ -1,0 +1,18 @@
+{
+  "name": "ai-affiliate-saas",
+  "version": "1.0.0",
+  "description": "AI-powered affiliate marketing platform automating workflows from product discovery to social publishing and analytics",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "build:frontend": "npm --prefix frontend run build",
+    "start:backend": "npm --prefix backend start",
+    "worker:content": "node worker/content.worker.js",
+    "worker:video": "node worker/video.worker.js",
+    "worker:publishing": "node worker/publishing.worker.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
