@@ -7,6 +7,7 @@ import { VideoService } from '../services/video/videoService.js';
 import { schedulerService } from '../services/publishing/schedulerService.js';
 import { emailService } from '../services/email/emailService.js';
 import { listAvailablePlatforms, validateForPlatform } from '../integrations/index.js';
+import { QueueManager } from '../jobs/queueManager.js';
 
 const router = express.Router();
 
@@ -110,9 +111,18 @@ router.post('/content/generate', async (req, res) => {
 });
 
 router.post('/video/render', async (req, res) => {
-  const { script, product, template } = req.body;
-  const result = await VideoService.renderVideoTemplate({ script, product, template });
-  res.json({ success: true, data: result });
+  try {
+    const { script, product, template, contentId } = req.body;
+    const result = await QueueManager.enqueueVideoRenderJob({ script, product, template, contentId });
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Workers Health & Status
+router.get('/workers', (req, res) => {
+  res.json({ success: true, data: QueueManager.getWorkerStatus() });
 });
 
 router.put('/content/:id/status', (req, res) => {
