@@ -1,0 +1,72 @@
+# Development Docker Compose with live hot-reloading
+# Usage: docker compose -f docker-compose.dev.yml up --build
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: affilimatrix_mongodb_dev
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - affilimatrix_dev_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: affilimatrix_redis_dev
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - affilimatrix_dev_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: affilimatrix_backend_dev
+    command: npm run dev
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend/src:/app/src
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/ai-affiliate-saas
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - affilimatrix_dev_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: builder
+    container_name: affilimatrix_frontend_dev
+    command: npx vite --host 0.0.0.0 --port 5173
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    environment:
+      - VITE_API_URL=/api
+    depends_on:
+      - backend
+    networks:
+      - affilimatrix_dev_network
+
+volumes:
+  mongodb_dev_data:
+  redis_dev_data:
+
+networks:
+  affilimatrix_dev_network:
+    driver: bridge

@@ -33,7 +33,37 @@
 
 ## 🚀 Getting Started
 
-### 1. Install & Run
+### 1. Run with Docker (Recommended)
+Launch the entire stack (MongoDB, Redis, Backend API, and Frontend web client) with a single command:
+
+```bash
+# Start all containers in background
+docker compose up --build -d
+
+# Or run via npm script
+npm run docker:up
+
+# View live container logs
+docker compose logs -f
+
+# Stop all containers
+docker compose down
+```
+
+Access the services:
+- **Frontend App**: [http://localhost](http://localhost) or [http://localhost:5173](http://localhost:5173)
+- **Backend API**: [http://localhost:5000/api](http://localhost:5000/api) (Health: [http://localhost:5000/health](http://localhost:5000/health))
+- **MongoDB**: `localhost:27017`
+- **Redis**: `localhost:6379`
+
+For live hot-reloading development inside Docker:
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+---
+
+### 2. Run Locally with Node.js
 From the root directory:
 ```bash
 # Start both Backend API and React Frontend concurrently
@@ -42,11 +72,11 @@ npm run dev
 
 Or start them individually:
 ```bash
-# Start the Backend Server (Port 5000)
-npm run dev:server
+# Start Backend Server (Port 5000)
+npm run dev:backend
 
-# Start the React Vite Client (Port 5173)
-npm run dev:client
+# Start React Vite Client (Port 5173)
+npm run dev:frontend
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
